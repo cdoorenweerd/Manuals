@@ -14,7 +14,8 @@ list.files()
 rm(list = ls())
 
 drop.tip(tree, "tipname")   # For removing outgroups
-cladeA <- node.leaves(tree, mrca(tree)["taxon1", "taxon2"])
+cladeA <- node.leaves(tree, mrca(tree)["taxon1", "taxon2"]) # For defining a most recent common ancestor mrca
+outgroup = c("taxon1", "taxon2")
 plot.phylo(tree)
 write.tree(MyTree, file="MyNewickTreefile.tre")    # Will export a newick tree
 ```
