@@ -1,5 +1,5 @@
 # BAMM manual
-By C. Doorenweerd. This manual assumes you have downloaded and compiled BAMM, that you have R (studio) and the packages APE, coda and BAMMtools installed.
+By C. Doorenweerd. This manual assumes you have downloaded and compiled BAMM, that you have R (studio) and the packages APE, geiger, coda and BAMMtools installed (install.packages"packagename").
 
 [BAMM CONFIGURATION FILE INFO](http://bamm-project.org/configuration.html)
 
