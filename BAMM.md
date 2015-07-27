@@ -29,7 +29,8 @@ Simple tree handling commands:
 tree <- read.tree("treefile.tre")    # Reads a newick tree
 outgroup = c("taxon1", "taxon2")    # Define outgroup taxa
 prunedtree <- drop.tip(tree, outgroup)   # For removing outgroups
-plot.phylo(tree)    # simple plot of tree
+plot.phylo(tree, cex = 0.5)    # simple plot of tree
+nodelabels(cex = 0.5)    # plots nodelabel numbers on tree
 write.tree(MyTree, file="MyNewickTreefile.tre")    # Export a newick tree
 ```
 
