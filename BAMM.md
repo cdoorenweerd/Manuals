@@ -121,7 +121,18 @@ effectiveSize(postburn$logLik)
 plot.bammdata(edata, tau=0.001, breaksmethod='quantile', lwd=2, pal="temperature", legend=TRUE)
 ```
 
-## 3. [Compute bayes factors](http://bamm-project.org/postprocess.html#bayes-factors-for-model-comparison)
+## 3. Plotting individual scenario's
+
+Check the different scenarios in your edata with `summary(edata)` and create a subset of edata from the scenario that you would like to plot.
+
+```R
+summary(edata)
+edata2 <- subsetEventData(edata, index = 2)
+plot.bammdata(edata2, breaksmethod='quantile', lwd=2, pal="temperature", legend=TRUE)
+```
+
+
+## 4. [Compute bayes factors](http://bamm-project.org/postprocess.html#bayes-factors-for-model-comparison)
 
 Next to the run, calculate M0 null model with simulation from prior only. To get this, in config file set `simulatePriorShifts = 1` and `outName = M0prior`. Then compare the output from this run with the actual run, by calculating bayes factors:
 
@@ -131,7 +142,7 @@ priorfile <- "M0prior_mcmc_out.txt"
 bayesfactormatrix <- computeBayesFactors(postfile, priorfile, burnin = 0.1)
 ```
 
-## 4. [Bayesian 95% credible set of shift configurations](http://bamm-project.org/postprocess.html#bayesian-credible-sets-of-shift-configurations)
+## 5. [Bayesian 95% credible set of shift configurations](http://bamm-project.org/postprocess.html#bayesian-credible-sets-of-shift-configurations)
 
 
 ```R
@@ -141,7 +152,7 @@ summary(css)    # Lists the different scenarios
 plot.credibleshiftset(css, lwd = 2, breaksmethod='quantile', pal = "temperature")    # Plots the different scenarios
 ```
 
-## 5. [Evolutionary rate variation through time: grayscale](http://bamm-project.org/bammgraph.html#evolutionary-rate-variation-through-time-grayscale)
+## 6. [Evolutionary rate variation through time: grayscale](http://bamm-project.org/bammgraph.html#evolutionary-rate-variation-through-time-grayscale)
 
 ```R
 starttime <- max(branching.times(tree))
