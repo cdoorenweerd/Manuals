@@ -134,13 +134,15 @@ plot.bammdata(edata2, breaksmethod='quantile', lwd=2, pal="temperature", legend=
 
 ## 4. [Compute bayes factors](http://bamm-project.org/postprocess.html#bayes-factors-for-model-comparison)
 
-Next to the run, calculate M0 null model with simulation from prior only. To get this, in config file set `simulatePriorShifts = 1` and `outName = M0prior`. Then compare the output from this run with the actual run, by calculating bayes factors:
+Next to the run, calculate M0 null model with simulation from prior only. To get this, in config file set `simulatePriorShifts = 1`. Then compare the output from this run with the actual run, by calculating bayes factors:
 
 ```R
 postfile <- "BAMM_mcmc_out.txt"
-priorfile <- "M0prior_mcmc_out.txt"
+priorfile <- "BAMM_prior_probs.txt"
 bayesfactormatrix <- computeBayesFactors(postfile, priorfile, burnin = 0.1)
 ```
+
+Differences of 20 are considered strong evidence for one scenario over another, differences of 50 as very strong.
 
 ## 5. [Bayesian 95% credible set of shift configurations](http://bamm-project.org/postprocess.html#bayesian-credible-sets-of-shift-configurations)
 
