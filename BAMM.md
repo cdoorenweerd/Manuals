@@ -121,20 +121,9 @@ effectiveSize(postburn$logLik)
 plot.bammdata(edata, tau=0.001, breaksmethod='quantile', lwd=2, pal="temperature", legend=TRUE)
 ```
 
-## 3. Plotting individual scenario's
+## 3. [Compute bayes factors](http://bamm-project.org/postprocess.html#bayes-factors-for-model-comparison)
 
-Check the different scenarios in your edata with `summary(edata)` and create a subset of edata from the scenario that you would like to plot.
-
-```R
-summary(edata)
-edata2 <- subsetEventData(edata, index = 2)
-plot.bammdata(edata2, breaksmethod='quantile', lwd=2, pal="temperature", legend=TRUE)
-```
-
-
-## 4. [Compute bayes factors](http://bamm-project.org/postprocess.html#bayes-factors-for-model-comparison)
-
-Next to the run, calculate M0 null model with simulation from prior only. To get this, in config file set `simulatePriorShifts = 1`. Then compare the output from this run with the actual run, by calculating bayes factors:
+To calculate the most likely number of rate shifts it is necessary to calculate bayes factors. To calculate M0 null model with simulation from prior only, in config file, set `simulatePriorShifts = 1`. Then compare the output from this run with the actual run, by calculating bayes factors:
 
 ```R
 postfile <- "BAMM_mcmc_out.txt"
@@ -144,11 +133,38 @@ bayesfactormatrix <- computeBayesFactors(postfile, priorfile, burnin = 0.1)
 
 Differences of 20 are considered strong evidence for one scenario over another, differences of 50 as very strong.
 
-## 5. [Branch specific marginal shift probabilities](http://bamm-project.org/rateshifts.html#marginal-shift-probabilities)
+## 4. Plotting individual scenario's
+
+Select and plot the most likely scenario of number of shifts:
+
+```R
+summary(edata)
+edata2 <- subsetEventData(edata, index = 2)
+plot.bammdata(edata2, breaksmethod='quantile', lwd=2, pal="temperature", legend=TRUE)
+addBAMMshifts(edata2, par.reset = FALSE, cex = 1)
+```
+
+## 5. [Branch specific shift probabilities](http://bamm-project.org/rateshifts.html#marginal-shift-probabilities)
+
+To calculate marginal shift probabilities per branch:
 
 ```R
 marg_probs <- marginalShiftProbsTree(edata)
 plot.phylo(marg_probs, show.tip.label = FALSE)
+```
+
+However, these may be misleading. To convert these to bayes factor probabilities:
+
+```R
+branch_priors <- getBranchShiftPriors(tree, "BAMM_prior_probs.txt")
+bf <- bayesFactorBranches(edata, branch_priors)
+plot.phylo(bf, show.tip.label = FALSE)
+```
+
+Where the branch length is the bayes factor value. To see the values directly:
+
+```R
+bf$edge.length
 ```
 
 ## 6. [Bayesian 95% credible set of shift configurations](http://bamm-project.org/postprocess.html#bayesian-credible-sets-of-shift-configurations)
