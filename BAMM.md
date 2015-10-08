@@ -30,7 +30,7 @@ tree <- read.tree("treefile.tre")    # Reads a newick tree
 outgroup = c("taxon1", "taxon2")    # Define outgroup taxa
 prunedtree <- drop.tip(tree, outgroup)   # For removing outgroups
 plot.phylo(tree, cex = 0.5)    # simple plot of tree
-nodelabels(cex = 0.5)    # plots nodelabel numbers on tree
+nodelabels(cex = 0.5, frame = "none")    # plots nodelabel numbers on tree
 write.tree(MyTree, file="MyNewickTreefile.tre")    # Export a newick tree
 ```
 
@@ -96,7 +96,7 @@ lambdaShift0 = 0
 
 ```R
 tree <- read.tree("treefile.tre")    # Reads the newick tree
-mcmcout <- read.csv("mcmc_out.txt", header = True)   # Information on the MCMC run
+mcmcout <- read.csv("mcmc_out.txt", header = TRUE)   # Information on the MCMC run
 edata <- getEventData(tree, eventdata = "bamm_event_data.txt", burnin=0.1)    # The main output from BAMM algorithm
 ```
 
@@ -158,6 +158,10 @@ plot.credibleshiftset(css, lwd = 2, breaksmethod='quantile', pal = "temperature"
 starttime <- max(branching.times(tree))
 plotRateThroughTime(edata, avgCol="black", start.time=starttime, ylim=c(0,1), cex.axis=2, intervalCol='gray80', intervals=c(0.05, 0.95), opacity=1)
 ```
+Or specifying a single clade only:
 
+```R
+plotRateThroughTime(edata, avgCol="black", start.time=starttime, node=72, xlim=c(100,0), ylim=c(0,0.3), cex.axis=1, cex=1, intervalCol='gray80', intervals=c(0.05, 0.95), opacity=1)
+```
 
 
