@@ -144,7 +144,14 @@ bayesfactormatrix <- computeBayesFactors(postfile, priorfile, burnin = 0.1)
 
 Differences of 20 are considered strong evidence for one scenario over another, differences of 50 as very strong.
 
-## 5. [Bayesian 95% credible set of shift configurations](http://bamm-project.org/postprocess.html#bayesian-credible-sets-of-shift-configurations)
+## 5. Branch specific bayes factors
+
+```R
+marg_probs <- marginalShiftProbsTree(edata)
+plot.phylo(marg_probs, show.tip.label = FALSE)
+```
+
+## 6. [Bayesian 95% credible set of shift configurations](http://bamm-project.org/postprocess.html#bayesian-credible-sets-of-shift-configurations)
 
 
 ```R
@@ -154,7 +161,7 @@ summary(css)    # Lists the different scenarios
 plot.credibleshiftset(css, lwd = 2, breaksmethod='quantile', pal = "temperature")    # Plots the different scenarios
 ```
 
-## 6. [Evolutionary rate variation through time: grayscale](http://bamm-project.org/bammgraph.html#evolutionary-rate-variation-through-time-grayscale)
+## 7. [Evolutionary rate variation through time: grayscale](http://bamm-project.org/bammgraph.html#evolutionary-rate-variation-through-time-grayscale)
 
 ```R
 starttime <- max(branching.times(tree))
@@ -165,5 +172,3 @@ Or specifying a single clade only:
 ```R
 plotRateThroughTime(edata, avgCol="black", start.time=starttime, node=72, xlim=c(100,0), ylim=c(0,0.3), cex.axis=1, cex=1, intervalCol='gray80', intervals=c(0.05, 0.95), opacity=1)
 ```
-
-
