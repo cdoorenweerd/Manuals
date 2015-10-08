@@ -144,7 +144,7 @@ bayesfactormatrix <- computeBayesFactors(postfile, priorfile, burnin = 0.1)
 
 Differences of 20 are considered strong evidence for one scenario over another, differences of 50 as very strong.
 
-## 5. Branch specific bayes factors
+## 5. [Branch specific marginal shift probabilities](http://bamm-project.org/rateshifts.html#marginal-shift-probabilities)
 
 ```R
 marg_probs <- marginalShiftProbsTree(edata)
