@@ -19,7 +19,7 @@ library("dendextendRcpp")
 setwd("path/to/workingdir/")
 ```
 
-Load newick trees. Trees must be rooted, no polytomies allowed.
+Load newick trees. Trees must be rooted, no polytomies allowed. It is advisable to root and order the trees in FigTree, and exporting it as newick.
 
 ```R
 tree1 <- read.tree("firsttree.nwk")
@@ -32,7 +32,7 @@ is.ultrametric(tree1)
 is.ultrametric(tree2)
 ```
 
-Make trees ultrametric (if not already so)
+Make trees ultrametric (if not already so). Lambda = 1 indicates clock like diversification - a rough ultrametricization method.
 
 ```R
 ctree1 <- chronos(tree1, lambda=1)
