@@ -46,6 +46,6 @@ tanglegram(ctree1,ctree2) # plots the two trees with colours
 entanglement(ctree1,ctree2) # gives a numeric comparison value where lower is better
 ```
 
-![example](/imgs/dendextend_example.png)
+![example](/imgs/dendextend_example1.png)
 
 
