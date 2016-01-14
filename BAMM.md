@@ -1,10 +1,19 @@
 # BAMM manual
-By C. Doorenweerd. This manual assumes you have downloaded and compiled BAMM, that you have R (studio) and the packages APE, coda and BAMMtools installed.
+By C. Doorenweerd. This manual assumes you have downloaded and compiled BAMM, that you have R (studio) and the packages APE, geiger, coda and BAMMtools installed (`install.packages("packagename")`). Load the packages using:
+
+```R
+library(ape)
+library(geiger)
+library(coda)
+library(BAMMtools)
+```
 
 [BAMM CONFIGURATION FILE INFO](http://bamm-project.org/configuration.html)
 
 
 # General useful R commands
+
+Ensure you are working from the folder where your files are at:
 
 ```R
 options(repos = c(CRAN = "http://cran.rstudio.com"))
@@ -12,12 +21,17 @@ getwd()
 setwd("dir")
 list.files()
 rm(list = ls())
+```
 
-drop.tip(tree, "tipname")   # For removing outgroups
-cladeA <- node.leaves(tree, mrca(tree)["taxon1", "taxon2"]) # For defining a most recent common ancestor mrca
-outgroup = c("taxon1", "taxon2")
-plot.phylo(tree)
-write.tree(MyTree, file="MyNewickTreefile.tre")    # Will export a newick tree
+Simple tree handling commands:
+
+```R
+tree <- read.tree("treefile.tre")    # Reads a newick tree
+outgroup = c("taxon1", "taxon2")    # Define outgroup taxa
+prunedtree <- drop.tip(tree, outgroup)   # For removing outgroups
+plot.phylo(tree, cex = 0.5)    # simple plot of tree
+nodelabels(cex = 0.5, frame = "none")    # plots nodelabel numbers on tree
+write.tree(MyTree, file="MyNewickTreefile.tre")    # Export a newick tree
 ```
 
 # Running BAMM
@@ -78,11 +92,18 @@ lambdaShift0 = 0
 
 # BAMMtools workflow
 
+## 0. Read in the BAMM output files
+
+```R
+tree <- read.tree("treefile.tre")    # Reads the newick tree
+mcmcout <- read.csv("mcmc_out.txt", header = TRUE)   # Information on the MCMC run
+edata <- getEventData(tree, eventdata = "bamm_event_data.txt", burnin=0.1)    # The main output from BAMM algorithm
+```
+
 ## 1. Check if the run went well
 
-In R, Plot the log likelihood trace:
+Plot the log likelihood trace:
 ```R
-mcmcout <- read.csv("mcmc_out.txt", header = True)
 plot(mcmcout$logLik ~ mcmcout$generation)
 ```
 
@@ -97,55 +118,73 @@ effectiveSize(postburn$logLik)
 
 ## 2. Mean phylorate plot (a quick look at the results)
 ```R
-library(BAMMtools)
-tree <- read.tree("mytree.tre")
-edata <- getEventData(tree, eventdata = "bamm_event_data.txt", burnin=0.1)
 plot.bammdata(edata, tau=0.001, breaksmethod='quantile', lwd=2, pal="temperature", legend=TRUE)
 ```
 
-## 3. [How many distinct rate shifts?](http://bamm-project.org/postprocess.html#how-many-rate-shifts)
+## 3. [Compute bayes factors](http://bamm-project.org/postprocess.html#bayes-factors-for-model-comparison)
 
-Create a bammdata object called "edata" from our eventdata and summarize rateshifts:
-```R
-library(BAMMtools)
-tree <- read.tree("mytree.tre")
-edata <- getEventData(tree, eventdata = "bamm_event_data.txt", burnin=0.1)
-summary(edata)
-```
-
-## 4. [Compute bayes factors](http://bamm-project.org/postprocess.html#bayes-factors-for-model-comparison)
-
-Next to the run, calculate M0 null model with simulation from prior only. To get this, in config file set `simulatePriorShifts = 1` and `outName = M0prior`. Then compare the output from this run with the actual run, by calculating bayes factors:
+To calculate the most likely number of rate shifts it is necessary to calculate bayes factors. To calculate M0 null model with simulation from prior only, in config file, set `simulatePriorShifts = 1`. Then compare the output from this run with the actual run, by calculating bayes factors:
 
 ```R
 postfile <- "BAMM_mcmc_out.txt"
-priorfile <- "M0prior_mcmc_out.txt"
+priorfile <- "BAMM_prior_probs.txt"
 bayesfactormatrix <- computeBayesFactors(postfile, priorfile, burnin = 0.1)
 ```
 
-## 5. [Bayesian 95% credible set of shift configurations](http://bamm-project.org/postprocess.html#bayesian-credible-sets-of-shift-configurations)
+Differences of 20 are considered strong evidence for one scenario over another, differences of 50 as very strong.
 
+## 4. Plotting individual scenario's
+
+Select and plot the most likely scenario of number of shifts:
 
 ```R
-library(BAMMtools)
-tree <- read.tree("mytree.tre")
-edata <- getEventData(tree, eventdata = "bamm_event_data.txt", burnin=0.1)
-
-priorshifts <- getBranchShiftPriors(tree, "m0prior_prior_probs.txt")
-css <- credibleShiftSet(edata, priorshifts, set.limit = 0.95)
-summary(css)
-plot.credibleshiftset(css, lwd = 2, breaksmethod='quantile', pal = "temperature")
+summary(edata)
+edata2 <- subsetEventData(edata, index = 2)
+plot.bammdata(edata2, breaksmethod='quantile', lwd=2, pal="temperature", legend=TRUE)
+addBAMMshifts(edata2, par.reset = FALSE, cex = 1)
 ```
 
-## 6. [Evolutionary rate variation through time: grayscale](http://bamm-project.org/bammgraph.html#evolutionary-rate-variation-through-time-grayscale)
+## 5. [Branch specific shift probabilities](http://bamm-project.org/rateshifts.html#marginal-shift-probabilities)
+
+To calculate marginal shift probabilities per branch:
 
 ```R
-plot.new()
-tree <- read.tree("mytree.tre")
+marg_probs <- marginalShiftProbsTree(edata)
+plot.phylo(marg_probs, show.tip.label = FALSE)
+```
+
+However, these may be misleading. To convert these to bayes factor probabilities:
+
+```R
+branch_priors <- getBranchShiftPriors(tree, "BAMM_prior_probs.txt")
+bf <- bayesFactorBranches(edata, branch_priors)
+plot.phylo(bf, show.tip.label = FALSE)
+```
+
+Where the branch length is the bayes factor value. To see the values directly:
+
+```R
+bf$edge.length
+```
+
+## 6. [Bayesian 95% credible set of shift configurations](http://bamm-project.org/postprocess.html#bayesian-credible-sets-of-shift-configurations)
+
+
+```R
+priorshifts <- getBranchShiftPriors(tree, "m0prior_prior_probs.txt")    # The probs from the priors only run
+css <- credibleShiftSet(edata, priorshifts, set.limit = 0.95)    # Set with 95% of credible shifts
+summary(css)    # Lists the different scenarios
+plot.credibleshiftset(css, lwd = 2, breaksmethod='quantile', pal = "temperature")    # Plots the different scenarios
+```
+
+## 7. [Evolutionary rate variation through time: grayscale](http://bamm-project.org/bammgraph.html#evolutionary-rate-variation-through-time-grayscale)
+
+```R
 starttime <- max(branching.times(tree))
-edata <- getEventdata(tree, "BAMM_event_data.txt", burnin = 0.1)
 plotRateThroughTime(edata, avgCol="black", start.time=starttime, ylim=c(0,1), cex.axis=2, intervalCol='gray80', intervals=c(0.05, 0.95), opacity=1)
 ```
+Or specifying a single clade only:
 
-
-
+```R
+plotRateThroughTime(edata, avgCol="black", start.time=starttime, node=72, xlim=c(100,0), ylim=c(0,0.3), cex.axis=1, cex=1, intervalCol='gray80', intervals=c(0.05, 0.95), opacity=1)
+```
