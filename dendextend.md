@@ -1,5 +1,5 @@
-dendextend quick reference
-==========================
+[dendextend](https://github.com/talgalili/dendextend/) quick reference
+======================================================================
 
 Install denextend packages:
 
@@ -34,7 +34,6 @@ is.ultrametric(tree2)
 
 Make trees ultrametric (if not already so)
 
-:code::R
 ```R
 ctree1 <- chronos(tree1, lambda=1)
 ctree2 <- chronos(tree2, lambda=1)
@@ -46,3 +45,7 @@ Compare the trees!
 tanglegram(ctree1,ctree2) # plots the two trees with colours
 entanglement(ctree1,ctree2) # gives a numeric comparison value where lower is better
 ```
+
+![example](/imgs/dendextend_example.png)
+
+
