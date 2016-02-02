@@ -126,6 +126,11 @@ plot.bammdata(edata, tau=0.001, breaksmethod='quantile', lwd=2, pal="temperature
 To calculate the most likely number of rate shifts it is necessary to calculate bayes factors. To calculate M0 null model with simulation from prior only, in config file, set `simulatePriorShifts = 1`. Then compare the output from this run with the actual run, by calculating bayes factors:
 
 ```R
+
+postfile <- "post_mcmc_out.txt"
+bfmat <- computeBayesFactors(postfile, expectedNumberOfShifts=1, burnin=0.1)
+
+
 postfile <- "BAMM_mcmc_out.txt"
 priorfile <- "BAMM_prior_probs.txt"
 bayesfactormatrix <- computeBayesFactors(postfile, priorfile, burnin = 0.1)
