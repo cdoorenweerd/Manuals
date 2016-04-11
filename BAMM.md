@@ -70,7 +70,7 @@ tiplist <- tree$tip.label
 write.table(tiplist, "taxonlist.txt")
 ```
 
-Open this list in Excel and separate the data using double quotes as separator, define the sampled percentages per clade as described in the manual and save as a tab-delimited text file. Make sure this text file has Linux style line breaks! Define the name 
+Open this list in Excel and separate the data using double quotes as separator, define the sampled percentages per clade as described in the manual and save as a tab-delimited text file. Make sure this text file has Linux style line breaks! 
 
 
 
@@ -345,6 +345,9 @@ bamm -c BAMM_configuration.txt
 Analysing the results with BAMMtools in R
 =========================================
 
+Load results
+------------
+
 1. Load the tree, if you haven't done so already
 
 ```R
@@ -354,24 +357,32 @@ tree <- read.tree("mytree.nwk")
 2. Decide burnin percentage
 
 ```R
-mcmcout <- read.csv("BAMM_mcmc_out.txt", header = TRUE)   # Information on the MCMC run
+mcmcout <- read.csv("BAMM_mcmc_out.txt", header = TRUE)   # Load the information on the MCMC run
 plot(mcmcout$logLik ~ mcmcout$generation) # plot log likelihood vs generations
+```
+
+Typically your burnin will be somewhere between 0.1 and 0.25
+
+3. Check if the post burnin effective sampling size is >>200
+
+```R
 burnstart <- floor(0.2 * nrow(mcmcout)) # choose a burnin here, currently 0.2
 postburn <- mcmcout[burnstart:nrow(mcmcout), ]
 effectiveSize(postburn$N_shifts) # should be >>200
 effectiveSize(postburn$logLik) # should be >>200
 ```
 
-Typically your burnin will be somewhere between 0.1 and 0.25
-
-3. Load the main BAMM output: the event data
-
-Use the burnin percentage you selected above.
+4. Load the main BAMM output: the event data
 
 ```R
 edata <- getEventData(tree, eventdata = "BAMM_event_data.txt", burnin=0.2)
 summary(edata)
 ```
+
+
+Visualize results
+-----------------
+
 
 - Mean phylorate plot (a quick look at the results)
 ```R
@@ -396,8 +407,9 @@ plot.phylo(marg_probs, show.tip.label = FALSE)
 
 
 - Maximum a posteriori probability shift configuration
-[bamm-project.org/rateshifts.html/#overall-best-shift-configuration]
-Recommended for publication. Make sure that your edata has the proper burnin.
+
+<bamm-project.org/rateshifts.html/#overall-best-shift-configuration>
+Recommended for publication.
 
 ```R
 best <- getBestShiftConfiguration(edata, expectedNumberOfShifts = 1, threshold = 5)
@@ -414,14 +426,16 @@ starttime <- max(branching.times(tree))
 plotRateThroughTime(edata, intervalCol="darkgreen", avgCol="darkgreen", start.time=starttime, ylim=c(0,0.15))
 ```
 
+    - grayscale 
 
-    - grayscale](http://bamm-project.org/bammgraph.html#evolutionary-rate-variation-through-time-grayscale)
+<http://bamm-project.org/bammgraph.html#evolutionary-rate-variation-through-time-grayscale>
 
 ```R
 starttime <- max(branching.times(tree))
 plotRateThroughTime(edata, avgCol="black", start.time=starttime, ylim=c(0,1), cex.axis=2, intervalCol='gray80', intervals=c(0.05, 0.95), opacity=1)
 ```
-Or specifying a single clade only:
+
+    - Or specifying a single clade only:
 
 ```R
 plotRateThroughTime(edata, avgCol="black", start.time=starttime, node=72, xlim=c(100,0), ylim=c(0,0.3), cex.axis=1, cex=1, intervalCol='gray80', intervals=c(0.05, 0.95), opacity=1)
