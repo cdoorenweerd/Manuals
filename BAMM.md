@@ -473,3 +473,9 @@ summary(css)    # Lists the different scenarios
 plot.credibleshiftset(css, lwd = 2, breaksmethod='quantile', pal = "temperature")    # Plots the different scenarios
 ```
 
+rior_probs.txt")    # The probs from the priors only run
+css <- credibleShiftSet(edata, priorshifts, set.limit = 0.95)    # Set with 95% of credible shifts
+summary(css)    # Lists the different scenarios
+plot.credibleshiftset(css, lwd = 2, breaksmethod='quantile', pal = "temperature")    # Plots the different scenarios
+```
+
