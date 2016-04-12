@@ -357,7 +357,7 @@ tree <- read.tree("mytree.nwk")
 2. Decide burnin percentage
 
 ```R
-mcmcout <- read.csv("BAMM_mcmc_out.txt", header = TRUE)   # Load the information on the MCMC run
+mcmcout <- read.csv("BAMM_mcmc_out.txt")   # Load the information on the MCMC run
 plot(mcmcout$logLik ~ mcmcout$generation) # plot log likelihood vs generations
 ```
 
@@ -373,6 +373,8 @@ effectiveSize(postburn$logLik) # should be >>200
 ```
 
 4. Load the main BAMM output: the event data
+
+Use the determined burnin value.
 
 ```R
 edata <- getEventData(tree, eventdata = "BAMM_event_data.txt", burnin=0.2)
@@ -392,7 +394,7 @@ plot.bammdata(edata, tau=0.001, breaksmethod='quantile', lwd=2, pal="temperature
 - View 95% most credible shift set
 
 ```R
-css <- credibleShiftSet(edata, expectedNumberOfShifts = 1, treshold=5, set.limit=0.95)
+css <- credibleShiftSet(edata, expectedNumberOfShifts = 1, threshold=5, set.limit=0.95)
 summary(css)
 plot.credibleshiftset(css, plotmax=4)
 ```
